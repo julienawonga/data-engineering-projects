@@ -5,6 +5,6 @@ SELECT
     customer_id,
     name,
     email,
-    country,
+    country
 FROM raw_customers
 WHERE email IS NOT NULL

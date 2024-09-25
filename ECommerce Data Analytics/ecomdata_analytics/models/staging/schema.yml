@@ -1,6 +1,6 @@
 version: 2
 
-source:
+sources:
   - name: ecommerce
     database: ecomdata_db
     schema: public
