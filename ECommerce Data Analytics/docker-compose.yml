@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ecomdata_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./csv_data:/csv_data
+
+  minio:
+    image: minio/minio
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server /data
+    ports:
+      - "9000:9000"
+    volumes:
+      - minio_data:/data
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
+  minio_data:

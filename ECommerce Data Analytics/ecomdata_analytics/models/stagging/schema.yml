@@ -1,0 +1,10 @@
+version: 2
+
+source:
+  - name: ecommerce
+    database: ecomdata_db
+    schema: public
+    tables:
+      - name: customers
+      - name: products
+      - name: orders
