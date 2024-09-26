@@ -98,3 +98,6 @@ This project demonstrates an ETL (Extract, Transform, Load) pipeline built on **
     - Automate pipeline execution using Google Cloud Functions.
     - Visualize data using Google Data Studio.
     
+## Acknowledgment
+
+This project is originally part of the Google Cloud Skills Boost platform, specifically from the lab "ETL Processing on Google Cloud Using Dataflow and BigQuery (Python)." I have adapted and re-implemented it to showcase my skills and understanding of cloud-based ETL pipelines. All the original concepts, materials, and instructions are provided by Google Cloud Skills Boost, and this adaptation is for educational and portfolio purposes.
