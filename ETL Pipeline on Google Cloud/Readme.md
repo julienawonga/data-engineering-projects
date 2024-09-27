@@ -1,5 +1,7 @@
 # ETL Pipeline on Google Cloud: Dataflow and BigQuery
 
+![Architecture](./images/architecture.png)
+
 ## Project Overview
 
 This project demonstrates an ETL (Extract, Transform, Load) pipeline built on **Google Cloud**. It processes large datasets by ingesting CSV files from **Cloud Storage**, transforming the data using **Dataflow** with Apache Beam (Python), and loading the transformed data into **BigQuery** for analysis.
