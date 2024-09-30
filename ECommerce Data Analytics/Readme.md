@@ -22,6 +22,8 @@ The **EcomData Insights** project aims to model and analyze data from a fictiona
 
 **Architecture Diagram**:
 
+![Architecture](./assets/architecture.png)
+
 - **Source Data** (CSV files)
 - **dbt** for transformations (staging, intermediate, and final models)
 - **PostgreSQL** as the data warehouse
