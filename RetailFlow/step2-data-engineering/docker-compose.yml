@@ -1,0 +1,181 @@
+networks:
+  data_platform_network:
+    driver: bridge
+
+volumes:
+  postgres_data_dw:
+  postgres_data_airflow:
+  minio_data:
+  airflow_dags:
+  airflow_logs:
+  airflow_plugins:
+  superset_data:
+  openmetadata_data:
+
+# ✅ Configuration Globale des Logs
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "100m"
+    max-file: "5"
+
+# ✅ Configuration Airflow Partagée
+x-airflow-common: &airflow-common
+  image: apache/airflow:latest
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
+    AIRFLOW__CORE__FERNET_KEY: 'GENERATE_YOUR_KEY_HERE'  # Replace with a valid key
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 10
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+  networks:
+    - data_platform_network
+  depends_on:
+    postgres_airflow:
+      condition: service_healthy
+  logging: *default-logging
+
+services:
+
+  ## 🟢 PostgreSQL - Data Warehouse
+  postgres_dw:
+    image: postgres:13
+    container_name: retailflow-postgres-dw
+    restart: always
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: retail_dw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dw:/var/lib/postgresql/data
+    networks:
+      - data_platform_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_user -d retail_dw"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  ## 🟢 PostgreSQL - Airflow Metadata
+  postgres_airflow:
+    image: postgres:13
+    container_name: retailflow-postgres-airflow
+    restart: always
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: airflow_user
+      POSTGRES_PASSWORD: airflow_pass
+      POSTGRES_DB: airflow_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_airflow:/var/lib/postgresql/data
+    networks:
+      - data_platform_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  ## 🟣 MinIO - Data Lake
+  minio:
+    image: quay.io/minio/minio
+    container_name: retailflow-minio
+    restart: always
+    logging: *default-logging
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - data_platform_network
+
+  ## 🟠 Airflow Scheduler
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: retailflow-airflow-scheduler
+    command: scheduler
+    depends_on:
+      postgres_airflow:
+        condition: service_healthy
+
+  ## 🟠 Airflow Webserver
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: retailflow-airflow-webserver
+    command: webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres_airflow:
+        condition: service_healthy
+
+  ## 🟡 OpenMetadata
+  openmetadata:
+    image: openmetadata/all-in-one:latest
+    container_name: retailflow-openmetadata
+    restart: always
+    logging: *default-logging
+    environment:
+      - OPENMETADATA_CONFIG_DATABASE_TYPE=postgresql
+      - OPENMETADATA_CONFIG_DATABASE_HOST=postgres_dw
+      - OPENMETADATA_CONFIG_DATABASE_PORT=5432
+      - OPENMETADATA_CONFIG_DATABASE_NAME=retail_dw
+      - OPENMETADATA_CONFIG_DATABASE_USER=postgres_user
+      - OPENMETADATA_CONFIG_DATABASE_PASSWORD=postgres_pass
+    ports:
+      - "8585:8585"
+    volumes:
+      - openmetadata_data:/var/lib/openmetadata
+    networks:
+      - data_platform_network
+    depends_on:
+      - postgres_dw
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8585/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  ## 🟢 Apache Superset
+  superset:
+    image: apache/superset:latest
+    container_name: retailflow-superset
+    restart: always
+    logging: *default-logging
+    environment:
+      - SUPERSET__DATABASE__SQLALCHEMY_DATABASE_URI=postgresql://postgres_user:postgres_pass@postgres_dw/retail_dw
+      - SUPERSET__SECURITY__ADMIN_USERNAME=admin
+      - SUPERSET__SECURITY__ADMIN_PASSWORD=admin
+      - SUPERSET__SECURITY__AUTH_TYPE=UsernamePasswordAuthentication
+      - SUPERSET__WEB_SERVER_PORT=8088
+      - SUPERSET__LOAD_EXAMPLES=false
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset_data:/var/lib/superset
+    networks:
+      - data_platform_network
+    depends_on:
+      - postgres_dw
+    healthcheck:
+      test: ["CMD-SHELL", "superset health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

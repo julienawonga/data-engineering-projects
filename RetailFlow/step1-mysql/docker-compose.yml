@@ -1,0 +1,40 @@
+# 📦 Data Services (MySQL & phpMyAdmin)
+networks:
+  retail_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+
+services:
+  ## 🟢 MySQL - Base de Données Transactionnelle
+  mysql_db:
+    image: mysql:8.0
+    container_name: retailflow_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: retail_db
+      MYSQL_USER: retail_user
+      MYSQL_PASSWORD: retail_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - retail_network
+
+  ## 🟠 phpMyAdmin - Administration MySQL
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: retailflow-phpmyadmin
+    environment:
+      PMA_HOST: mysql_db
+      PMA_USER: retail_user
+      PMA_PASSWORD: retail_pass
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql_db
+    networks:
+      - retail_network

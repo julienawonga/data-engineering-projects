@@ -1,0 +1,5 @@
+step1-mysql/step1
+RetailFlow/step2-data-engineering/airflow/logs/
+*.log
+*.env
+*.db
