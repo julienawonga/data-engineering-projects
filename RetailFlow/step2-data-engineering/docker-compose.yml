@@ -1,7 +1,9 @@
+# ✅ Réseau Global
 networks:
   data_platform_network:
     driver: bridge
 
+# ✅ Volumes
 volumes:
   postgres_data_dw:
   postgres_data_airflow:
@@ -11,6 +13,7 @@ volumes:
   airflow_plugins:
   superset_data:
   openmetadata_data:
+  nifi_data:
 
 # ✅ Configuration Globale des Logs
 x-logging: &default-logging
@@ -25,7 +28,7 @@ x-airflow-common: &airflow-common
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_pass@postgres_airflow/airflow_db
-    AIRFLOW__CORE__FERNET_KEY: 'GENERATE_YOUR_KEY_HERE'  # Replace with a valid key
+    AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__SCHEDULER__MIN_FILE_PROCESS_INTERVAL: 10
@@ -40,8 +43,8 @@ x-airflow-common: &airflow-common
       condition: service_healthy
   logging: *default-logging
 
+# ✅ Services
 services:
-
   ## 🟢 PostgreSQL - Data Warehouse
   postgres_dw:
     image: postgres:13
@@ -106,6 +109,34 @@ services:
     networks:
       - data_platform_network
 
+  ## 🟢 Apache NiFi - Ingestion
+  nifi:
+    image: apache/nifi:latest
+    container_name: retailflow-nifi
+    restart: always
+    logging: *default-logging
+    environment:
+      NIFI_WEB_HTTP_PORT: 8082
+      NIFI_CLUSTER_IS_NODE: 'false'
+      NIFI_REMOTE_INPUT_SOCKET_PORT: ''
+      SINGLE_USER_CREDENTIALS_USERNAME: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: admin
+    ports:
+      - "8082:8082"
+    volumes:
+      - nifi_data:/opt/nifi/nifi-current/data
+      - ./nifi/conf:/opt/nifi/nifi-current/conf
+      - ./nifi/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./nifi/content_repository:/opt/nifi/nifi-current/content_repository
+      - ./nifi/database_repository:/opt/nifi/nifi-current/database_repository
+    networks:
+      - data_platform_network
+    depends_on:
+      postgres_dw:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
   ## 🟠 Airflow Scheduler
   airflow-scheduler:
     <<: *airflow-common
@@ -125,33 +156,6 @@ services:
     depends_on:
       postgres_airflow:
         condition: service_healthy
-
-  ## 🟡 OpenMetadata
-  openmetadata:
-    image: openmetadata/all-in-one:latest
-    container_name: retailflow-openmetadata
-    restart: always
-    logging: *default-logging
-    environment:
-      - OPENMETADATA_CONFIG_DATABASE_TYPE=postgresql
-      - OPENMETADATA_CONFIG_DATABASE_HOST=postgres_dw
-      - OPENMETADATA_CONFIG_DATABASE_PORT=5432
-      - OPENMETADATA_CONFIG_DATABASE_NAME=retail_dw
-      - OPENMETADATA_CONFIG_DATABASE_USER=postgres_user
-      - OPENMETADATA_CONFIG_DATABASE_PASSWORD=postgres_pass
-    ports:
-      - "8585:8585"
-    volumes:
-      - openmetadata_data:/var/lib/openmetadata
-    networks:
-      - data_platform_network
-    depends_on:
-      - postgres_dw
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8585/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   ## 🟢 Apache Superset
   superset:
