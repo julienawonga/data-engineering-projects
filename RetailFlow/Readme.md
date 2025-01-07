@@ -27,9 +27,7 @@ Une chaîne de magasins de détail opérant à la fois en ligne et en physique s
 * **Centralisation dans un entrepôt de données (PostgreSQL)** pour analyse et reporting.  
 * **Transformations analytiques (dbt)** : Modélisation des ventes par client, produit, et localisation.  
 * **Orchestration (Airflow)** : Automatisation des workflows ETL/ELT.  
-* **Visualisation (Superset)** : Tableaux de bord interactifs sur les ventes et performances.  
-* **Gouvernance (OpenMetadata)** : Documentation, lignage des données, gouvernance.
-
+* **Visualisation (Superset)** : Tableaux de bord interactifs sur les ventes et performances.
 ---
 
 ## 🛠️ 3. Architecture Technique
@@ -62,9 +60,6 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 * **Airflow (Orchestration)**  
   * Automatisation de la collecte (NiFi), transformation (dbt) et mise à jour des tableaux de bord.
 
-* **OpenMetadata (Gouvernance)**  
-  * Assure la traçabilité et la documentation des pipelines de données.
-
 * **Superset (Visualisation)**  
   * Crée des tableaux de bord interactifs pour explorer les ventes, les clients et les magasins.
 
@@ -85,10 +80,6 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 
 * **Orchestration avec Airflow :**  
   * Automatisation de la collecte (NiFi), transformation (dbt) et mise à jour des tableaux de bord.
-
-* **Gouvernance avec OpenMetadata :**  
-  * Documentation automatisée des schémas et tables.  
-  * Lignage des données.
 
 * **Visualisation avec Superset :**  
   * Création de tableaux de bord pour analyser :  

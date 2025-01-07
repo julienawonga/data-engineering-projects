@@ -120,15 +120,9 @@ services:
       NIFI_CLUSTER_IS_NODE: 'false'
       NIFI_REMOTE_INPUT_SOCKET_PORT: ''
       SINGLE_USER_CREDENTIALS_USERNAME: admin
-      SINGLE_USER_CREDENTIALS_PASSWORD: admin
+      SINGLE_USER_CREDENTIALS_PASSWORD: ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
     ports:
       - "8082:8082"
-    volumes:
-      - nifi_data:/opt/nifi/nifi-current/data
-      - ./nifi/conf:/opt/nifi/nifi-current/conf
-      - ./nifi/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
-      - ./nifi/content_repository:/opt/nifi/nifi-current/content_repository
-      - ./nifi/database_repository:/opt/nifi/nifi-current/database_repository
     networks:
       - data_platform_network
     depends_on:
@@ -151,12 +145,28 @@ services:
     <<: *airflow-common
     container_name: retailflow-airflow-webserver
     command: webserver
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
     ports:
       - "8080:8080"
     depends_on:
       postgres_airflow:
         condition: service_healthy
-
+  
+  ### 🟠 Airflow Init
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
   ## 🟢 Apache Superset
   superset:
     image: apache/superset:latest
