@@ -17,9 +17,8 @@
 
 ## 🏢 2. Contexte Métier : Cas d'Usage Retail
 
-![Architecture Diagramme](./static/projet-retailflow.png)
-
 ### 📊 Scénario : Vente en ligne et magasins physiques
+
 Une chaîne de magasins de détail opérant à la fois en ligne et en physique souhaite mieux comprendre ses ventes, ses clients et ses magasins. Pour cela, elle a besoin de :
 
 * **Données transactionnelles (MySQL)** : Commandes clients en ligne (produits achetés, montants, date).  
@@ -28,11 +27,14 @@ Une chaîne de magasins de détail opérant à la fois en ligne et en physique s
 * **Transformations analytiques (dbt)** : Modélisation des ventes par client, produit, et localisation.  
 * **Orchestration (Airflow)** : Automatisation des workflows ETL/ELT.  
 * **Visualisation (Superset)** : Tableaux de bord interactifs sur les ventes et performances.
+
 ---
 
 ## 🛠️ 3. Architecture Technique
 
-L'architecture de RetailFlow repose sur une approche **modulaire et évolutive** :
+L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**, comme illustrée ci-dessous :
+
+![Architecture Diagramme](./static/projet-retailflow-talend.png)
 
 ---
 
@@ -44,7 +46,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 * **Fichier CSV (Localisation des magasins)**  
   * Fichier externe stocké localement.
 
-* **Apache NiFi (Ingestion de données)**  
+* **Talend (Ingestion de données)**  
   * Collecte les données depuis MySQL et le fichier CSV.  
   * Envoie les données vers MinIO (Data Lake) et PostgreSQL (Data Warehouse).
 
@@ -58,7 +60,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
   * Transforme les données en modèles analytiques (vue agrégée des ventes, clients, etc.).
 
 * **Airflow (Orchestration)**  
-  * Automatisation de la collecte (NiFi), transformation (dbt) et mise à jour des tableaux de bord.
+  * Automatisation de la collecte (Talend), transformation (dbt) et mise à jour des tableaux de bord.
 
 * **Superset (Visualisation)**  
   * Crée des tableaux de bord interactifs pour explorer les ventes, les clients et les magasins.
@@ -67,7 +69,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 
 ## 🎓 5. Étapes Clés du Pipeline de Données
 
-* **Ingestion avec NiFi :**  
+* **Ingestion avec Talend :**  
   * Synchronisation régulière des données depuis MySQL et le fichier CSV vers PostgreSQL et MinIO.
 
 * **Stockage :**  
@@ -79,7 +81,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
   * Nettoyage et structuration des données.
 
 * **Orchestration avec Airflow :**  
-  * Automatisation de la collecte (NiFi), transformation (dbt) et mise à jour des tableaux de bord.
+  * Automatisation de la collecte (Talend), transformation (dbt) et mise à jour des tableaux de bord.
 
 * **Visualisation avec Superset :**  
   * Création de tableaux de bord pour analyser :  
@@ -110,13 +112,14 @@ cd step2-data-engineering
 docker-compose up -d
 ```
 
+
 ## 📊 7. Tableaux de Bord Attendues :
 * Performance des ventes par région.
 * Top 10 des clients avec les plus gros achats.
 * Produits les plus vendus.
 
 ## 📊 8. Ressources Utiles :
-* NiFi Documentation: https://nifi.apache.org
+* Talend Documentation: https://www.talend.com
 * dbt Documentation: https://docs.getdbt.com
 * Apache Superset: https://superset.apache.org
 
@@ -132,26 +135,23 @@ retail-flow-project/
 ├─ step2-data-engineering/
 │  ├─ docker-compose.yml
 │  ├─ .env
-│  ├─ nifi/                
-│  │   ├─ templates/ 
-│  │   ├─ configs/
-│  │   ├─ processors/
-│  │
 │  ├─ minio/              
 │  ├─ postgres/           
 │  ├─ dbt/                
 │  ├─ airflow/            
-│  ├─ superset/           
-│  ├─ openmetadata/       
-│  ├─ scripts/            
+│  ├─ superset/                
+│  ├─ scripts/           
 │  ├─ logs/               
+│
+├─ talend/
+│  ├─ jobs/ 
+│  ├─ configs/
 │
 ├─ data/
 │  ├─ store_locations.csv
 │
 └─ README.md
 ```
-
 ## Licence:
 <p>Ce projet est sous licence MIT. Consultez le fichier LICENSE.md pour plus de détails.</p>
 
