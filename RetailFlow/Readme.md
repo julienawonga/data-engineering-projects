@@ -34,7 +34,7 @@ Une chaîne de magasins de détail opérant à la fois en ligne et en physique s
 
 L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**, comme illustrée ci-dessous :
 
-![Architecture Diagramme](./static/projet-retailflow-talend.png)
+![Architecture Diagramme](./static/projet-retailflow.png)
 
 ---
 
