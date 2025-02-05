@@ -46,7 +46,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 * **Fichier CSV (Localisation des magasins)**  
   * Fichier externe stocké localement.
 
-* **Talend (Ingestion de données)**  
+* **Kafka (Ingestion de données)**  
   * Collecte les données depuis MySQL et le fichier CSV.  
   * Envoie les données vers MinIO (Data Lake) et PostgreSQL (Data Warehouse).
 
@@ -60,7 +60,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
   * Transforme les données en modèles analytiques (vue agrégée des ventes, clients, etc.).
 
 * **Airflow (Orchestration)**  
-  * Automatisation de la collecte (Talend), transformation (dbt) et mise à jour des tableaux de bord.
+  * Automatisation de la collecte (Kafka), transformation (dbt) et mise à jour des tableaux de bord.
 
 * **Superset (Visualisation)**  
   * Crée des tableaux de bord interactifs pour explorer les ventes, les clients et les magasins.
@@ -69,7 +69,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
 
 ## 🎓 5. Étapes Clés du Pipeline de Données
 
-* **Ingestion avec Talend :**  
+* **Ingestion avec Kafka :**  
   * Synchronisation régulière des données depuis MySQL et le fichier CSV vers PostgreSQL et MinIO.
 
 * **Stockage :**  
@@ -81,7 +81,7 @@ L'architecture de RetailFlow repose sur une approche **modulaire et évolutive**
   * Nettoyage et structuration des données.
 
 * **Orchestration avec Airflow :**  
-  * Automatisation de la collecte (Talend), transformation (dbt) et mise à jour des tableaux de bord.
+  * Automatisation de la collecte (Kafka), transformation (dbt) et mise à jour des tableaux de bord.
 
 * **Visualisation avec Superset :**  
   * Création de tableaux de bord pour analyser :  
@@ -119,7 +119,7 @@ docker-compose up -d
 * Produits les plus vendus.
 
 ## 📊 8. Ressources Utiles :
-* Talend Documentation: https://www.talend.com
+* Kafka Documentation: https://kafka.apache.org/
 * dbt Documentation: https://docs.getdbt.com
 * Apache Superset: https://superset.apache.org
 
@@ -143,7 +143,7 @@ retail-flow-project/
 │  ├─ scripts/           
 │  ├─ logs/               
 │
-├─ talend/
+├─ Kafka/
 │  ├─ jobs/ 
 │  ├─ configs/
 │
