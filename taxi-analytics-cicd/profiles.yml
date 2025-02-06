@@ -1,0 +1,12 @@
+dbt_taxi_project:
+  outputs:
+    dev:
+      dbname: taxi_db
+      host: postgres_db
+      pass: taxi_pass
+      port: 5432
+      schema: taxi_schema
+      threads: 1
+      type: postgres
+      user: taxi_user
+  target: dev

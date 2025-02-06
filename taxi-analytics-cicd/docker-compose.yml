@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-init/:/docker-entrypoint-initdb.d/
+
+  dbt:
+    build:
+      context: .
+      dockerfile: dbt-postgres.Dockerfile
+    container_name: dbt-postgres
+    restart: always
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/usr/app
+      - ./profiles.yml:/root/.dbt/profiles.yml
+    entrypoint: [ "/bin/bash", "-c", "tail -f /dev/null" ]
+
+  adminer:
+    image: adminer:4
+    restart: always
+    container_name: adminer
+    depends_on:
+      - postgres
+    ports:
+      - "8082:8080"
