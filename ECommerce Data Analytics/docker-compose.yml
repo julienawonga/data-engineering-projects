@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16
+    container_name: postgres
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -11,18 +12,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./csv_data:/csv_data
 
-  minio:
-    image: minio/minio
-    environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio123
-    command: server /data
-    ports:
-      - "9000:9000"
-    volumes:
-      - minio_data:/data
-
   adminer:
+    container_name: adminer
     image: adminer:latest
     restart: always
     ports:
