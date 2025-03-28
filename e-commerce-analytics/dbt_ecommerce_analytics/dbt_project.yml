@@ -6,7 +6,7 @@ name: 'dbt_ecommerce_analytics'
 version: '1.0.0'
 
 # This setting configures which "profile" dbt uses for this project.
-profile: 'ecomdata_analytics'
+profile: 'ecomm_analytics'
 
 # These configurations specify where dbt should look for different types of files.
 # The `model-paths` config, for example, states that models in this project can be
@@ -30,7 +30,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
-  ecomdata_analytics:
-    # Config indicated by + and applies to all files under models/example/
-    example:
+  ecomm_analytics:
+    # Config indicated by + and applies to all files under models/staging/
+    +materialized: view
+    +schema: public
+    +database: ecomm_db
+    staging:
       +materialized: view
+    marts:
+      +materialized: table

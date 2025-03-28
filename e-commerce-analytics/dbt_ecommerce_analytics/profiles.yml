@@ -1,4 +1,4 @@
-default:
+ecomm_analytics:
   target: dev
   outputs:
     dev:
@@ -7,6 +7,6 @@ default:
       user: admin
       password: admin
       port: 5432
-      dbname: ecomdata_db
-      schema: default
+      dbname: ecomm_db
+      schema: public
       threads: 1

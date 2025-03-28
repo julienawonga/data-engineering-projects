@@ -1,5 +1,5 @@
 WITH raw_customers AS (
-    SELECT * FROM {{ source('ecommerce', 'customers')}}
+    SELECT * FROM {{ source('raw', 'customers')}}
 )
 SELECT 
     customer_id,

@@ -1,5 +1,5 @@
 WITH raw_orders AS (
-    SELECT * FROM {{ source('ecommerce', 'orders') }}
+    SELECT * FROM {{ source('raw', 'orders') }}
 )
 SELECT
     order_id,
