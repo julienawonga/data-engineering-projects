@@ -1,4 +1,13 @@
 __pycache__/
-venv/
+
+
+venv
+.venv
+
+
+env
+.env
+
+
 *.csv
 *.log

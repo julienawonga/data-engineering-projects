@@ -7,9 +7,6 @@ CREATE DATABASE ecomm_db;
 -- The rest must be executed inside ecomm_db
 \connect ecomm_db;
 
--- Create the schema inside the new database
-CREATE SCHEMA IF NOT EXISTS ecomm_schema;
-
 
 CREATE TABLE customers (
     customer_id SERIAL PRIMARY KEY,
@@ -20,7 +17,7 @@ CREATE TABLE customers (
 
 CREATE TABLE products (
     product_id SERIAL PRIMARY KEY,
-    product_name VARCHAR(255) NOT NULL,
+    product_name VARCHAR(255),
     category VARCHAR(100),
     price NUMERIC(10, 2) NOT NULL
 );
