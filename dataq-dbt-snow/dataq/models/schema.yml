@@ -1,0 +1,15 @@
+
+version: 2
+
+models:
+  - name: stg_customer_clean
+    description: Nettoyage
+    columns:
+      - name: ID
+        tests:
+          - unique
+          - not_null
+      - name: EMAIL
+        tests:
+          - not_null
+          - unique

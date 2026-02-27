@@ -11,3 +11,9 @@ env
 
 *.csv
 *.log
+
+keys
+
+logs
+
+profiles.yml
